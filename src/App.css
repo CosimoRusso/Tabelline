@@ -24,6 +24,18 @@
   color: white;
 }
 
+input{
+  font-size: calc(10px + 2vmin);
+  width: 100px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+button{
+  font-size: calc(8px + 2vmin);
+  background-color: white;
+}
+
 .App-link {
   color: #61dafb;
 }
