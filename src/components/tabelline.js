@@ -9,8 +9,12 @@ function shuffleArray(array) {
     }
 }
 
+const style = {
+    btnSelect: {marginLeft: "20px", marginRight: "20px"},
+    mb30: {marginBottom: "30px"}
+}
+
 export default function Tabelline () {
-    const [maxNum, setMaxNum] = useState(10);
     const [started, setStarted] = useState(false);
     const [operations, setOperations] = useState([]);
     const [result, setResult] = useState("");
@@ -18,17 +22,22 @@ export default function Tabelline () {
     const [successes, setSuccesses] = useState(0);
     const [total, setTotal] = useState(0);
     const [stop, setStop] = useState(false);
+    const arr10 = [1,2,3,4,5,6,7,8,9,10];
+    const [selected, setSelected] = useState(arr10.map(i => {return {checked: false, val: i}}));
+    const [shuffle, setShuffle] = useState(false);
 
     const startApplication = () => {
         setStarted(true);
         let tmp = [];
-        for (let i=1; i<=maxNum; i++){
+        selected.filter(s => s.checked).forEach(s => {
+            const i = parseInt(s.val);
             for (let j=0; j<=10; j++){
                 tmp.push([i, j, i*j]);
             }
-        }
+        });
         setTotal(tmp.length);
-        shuffleArray(tmp);
+        if (shuffle)
+            shuffleArray(tmp);
         setOperations(tmp);
 
     }
@@ -54,10 +63,42 @@ export default function Tabelline () {
         setResult("");
     }
 
+    const onCheckedChange = (i) => {
+        setSelected(selected.map(s => {
+            if (s.val === i) return {checked: !s.checked, val: i}
+            else return s;
+        }));
+    }
+    const selectAll = () => () => {
+        setSelected(selected.map(s => {
+            s.checked = true;
+            return s;
+        }));
+    }
+    const deselectAll = () => () => {
+        setSelected(selected.map(s => {
+            s.checked = false;
+            return s;
+        }));
+    }
+
     return <div>
         {!started && <div>
-        <span>Fino alla tabellina del?</span>
-        <input type={"number"} min={1} max={10} value={maxNum} onChange={e => setMaxNum(parseInt(e.target.value))}/>
+            <div style={style.mb30}>
+                <span>Quali tabelline?</span>
+                <button style={style.btnSelect} onClick={selectAll()}>Seleziona Tutto</button>
+                <button style={style.btnSelect} onClick={deselectAll()}>Deseleziona Tutto</button>
+            </div>
+            <div style={{marginBottom: '30px'}}>
+                { selected.map(i => <div style={{display: "inline-block"}} key={i.val}>
+                    <input type="checkbox" checked={i.checked} onChange={() => onCheckedChange(i.val)} />
+                    <label>{i.val}</label>
+                </div>) }
+            </div>
+            <div style={style.mb30}>
+                <input type="checkbox" value={shuffle} onChange={() => setShuffle(!shuffle)}/>
+                <label>Mescola le tabelline</label>
+            </div>
             <button onClick={() => startApplication()}>Conferma</button></div>}
         {started && <div>
             <form onSubmit={(e) => checkResult(e)}>

@@ -30,6 +30,9 @@ input{
   margin-left: 20px;
   margin-right: 20px;
 }
+input[type="checkbox"]{
+  width: auto;
+}
 
 button{
   font-size: calc(8px + 2vmin);
