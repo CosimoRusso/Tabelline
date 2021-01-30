@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Timer from "./timer";
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -108,8 +109,8 @@ export default function Tabelline () {
             </form>
             <p>Completati: {successes} / {total}</p>
             <p>Errori: {errors}</p>
+            <Timer start={started} stop={stop} />
             <button onClick={() => window.location.reload()}>Ricomincia</button>
-
         </div>}
     </div>
 }
