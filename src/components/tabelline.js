@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useRef, useState} from 'react';
 import Timer from "./timer";
 
 function shuffleArray(array) {
@@ -11,24 +11,26 @@ function shuffleArray(array) {
 }
 
 const style = {
-    btnSelect: {marginLeft: "20px", marginRight: "20px"},
-    mb30: {marginBottom: "30px"}
+    btnSelect: {marginLeft: "20px", marginRight: "20px", padding: "10px"},
+    mb30: {marginBottom: "30px"},
+    btnCheckboxSelected: { marginLeft: "20px", marginRight: "20px", padding: "10px", backgroundColor: "blue", color: "white" },
 }
 
 export default function Tabelline () {
-    const [started, setStarted] = useState(false);
     const [operations, setOperations] = useState([]);
     const [result, setResult] = useState("");
     const [errors, setErrors] = useState(0);
     const [successes, setSuccesses] = useState(0);
     const [total, setTotal] = useState(0);
-    const [stop, setStop] = useState(false);
     const arr10 = [1,2,3,4,5,6,7,8,9,10];
     const [selected, setSelected] = useState(arr10.map(i => {return {checked: false, val: i}}));
     const [shuffle, setShuffle] = useState(false);
+    const [state, setState] = useState(0);
+    const [time, setTime] = useState(0);
+    const [finalTime, setFinalTime] = useState(0);
 
     const startApplication = () => {
-        setStarted(true);
+        setState(state + 1);
         let tmp = [];
         selected.filter(s => s.checked).forEach(s => {
             const i = parseInt(s.val);
@@ -45,13 +47,12 @@ export default function Tabelline () {
 
     const checkResult = (e) => {
         e.preventDefault();
-        if (stop) return false;
         if (parseInt(result) === parseInt(operations[0][2])) {
             //result is correct
             if (operations.length === 1){
-                alert("Completato!");
                 setSuccesses(successes + 1);
-                setStop(true);
+                setState(state + 1);
+                setFinalTime(time);
             }else{
                 setSuccesses(successes + 1);
                 setOperations(operations.slice(1));
@@ -83,8 +84,9 @@ export default function Tabelline () {
         }));
     }
 
+    const finishedTabelline = selected.filter(x => x.checked).map(x => x.val);
     return <div>
-        {!started && <div>
+        {state===0 && <div>
             <div style={style.mb30}>
                 <span>Quali tabelline?</span>
                 <button style={style.btnSelect} onClick={selectAll()}>Seleziona Tutto</button>
@@ -92,8 +94,7 @@ export default function Tabelline () {
             </div>
             <div style={{marginBottom: '30px'}}>
                 { selected.map(i => <div style={{display: "inline-block"}} key={i.val}>
-                    <input type="checkbox" checked={i.checked} onChange={() => onCheckedChange(i.val)} />
-                    <label>{i.val}</label>
+                    <button style={i.checked ? style.btnCheckboxSelected : style.btnSelect} onClick={() => onCheckedChange(i.val)}>{i.val}</button>
                 </div>) }
             </div>
             <div style={style.mb30}>
@@ -101,7 +102,7 @@ export default function Tabelline () {
                 <label>Mescola le tabelline</label>
             </div>
             <button onClick={() => startApplication()}>Conferma</button></div>}
-        {started && <div>
+        {state===1 && <div>
             <form onSubmit={(e) => checkResult(e)}>
                 <span>{operations[0][0]} × {operations[0][1]} =</span>
                 <input type={"number"} value={result} onChange={e => setResult(e.target.value)}/>
@@ -109,7 +110,14 @@ export default function Tabelline () {
             </form>
             <p>Completati: {successes} / {total}</p>
             <p>Errori: {errors}</p>
-            <Timer start={started} stop={stop} />
+            <Timer start={state===1} stop={state===2} time={[time, setTime]}/>
+        </div>}
+        {state===2 && <div>
+            <h3>Finito!!!</h3>
+            <p>Hai completato {finishedTabelline.length === 1 ? "la" : "le"} tabellin{finishedTabelline.length === 1 ? "a" : "e"} del{[1,8].includes(finishedTabelline[0]) && "l'"} {selected.filter(x => x.checked).map(x => x.val).join(", ")}</p>
+            <p> {shuffle && "in ordine sparso"}</p>
+            <p> con {errors} error{errors === 1 ? "e" : "i"}</p>
+            <p>in {Math.floor(finalTime / 3600)} ore {Math.floor(finalTime % 3600 / 60)} minuti {finalTime % 60} secondi </p>
             <button onClick={() => window.location.reload()}>Ricomincia</button>
         </div>}
     </div>

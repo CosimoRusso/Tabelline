@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 
 export default function Timer (props){
-    const [time, setTime] = useState(0);
+    const [time, setTime] = props.time;
     const interval = useRef(null);
 
 
