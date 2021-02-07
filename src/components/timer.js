@@ -23,7 +23,7 @@ export default function Timer (props){
         if (props.stop){
             stopTimer();
         }
-    }, [props]);
+    });
 
     return <div>
         <label>{Math.floor(time / 3600)} : {Math.floor(time % 3600 / 60)} : {time % 60}</label>
